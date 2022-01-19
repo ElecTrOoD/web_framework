@@ -1,0 +1,2 @@
+waitress==2.0.0
+Jinja2==3.0.3
