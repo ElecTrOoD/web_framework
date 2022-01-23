@@ -1,12 +1,13 @@
 import datetime
 
-from app.extensions import get_routes, get_fronts, Redirect, NotFoundPage
+from .default_front_controllers import default_fronts
+from .extensions import NotFoundPage, Redirect
 
 
 class Application:
-    def __init__(self):
-        self.routes = get_routes()
-        self.fronts = get_fronts()
+    def __init__(self, routes, fronts=[]):
+        self.routes = routes
+        self.fronts = default_fronts + fronts
 
     def __call__(self, environ, start_response):
         path = environ['PATH_INFO']

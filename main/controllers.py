@@ -1,4 +1,4 @@
-from app.templator import render
+from verse import render
 
 
 def index_page(request):
