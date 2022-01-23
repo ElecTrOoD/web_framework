@@ -1,10 +1,11 @@
-import os
+from os import getcwd
+
 from jinja2 import Template
 
-path = os.getcwd()
-if 'settings.py' in os.listdir(path):
+try:
     from settings import TEMPLATES_PATH
-else:
+except ImportError:
+    path = getcwd()
     TEMPLATES_PATH = path + '\\templates\\'
 
 
