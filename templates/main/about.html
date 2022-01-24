@@ -5,7 +5,26 @@
     <title>{{ title }}</title>
 </head>
 <body>
-<h3>About Page</h3>
-© NoName {{ current_year }}
+<h1>About Page</h1>
+<h3>Send message</h3>
+
+<form method="post">
+    <input type='text' name='title' placeholder="Title">
+    <input type='text' name='text' placeholder="Text message">
+    <input type='email' name='email' placeholder="email">
+    <button type='submit'>Send message</button>
+</form>
+
+{% if message %}
+    <div style='margin-top: 100px'>
+        <h1>Your message</h1>
+        <p>Title: {{message.title}}</p>
+        <text>Text: {{message.text}}</text>
+        <p>Your email: {{message.email}} </p>
+    </div>
+    
+{% endif %}
+
+<div style="position:absolute; bottom: 20px"> © NoName {{ current_year }} </div>
 </body>
 </html>
