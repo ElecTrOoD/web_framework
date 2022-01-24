@@ -1,7 +1,8 @@
 import datetime
+from urllib.parse import parse_qs
 
 from .default_front_controllers import default_fronts
-from .extensions import MethodNotAllowed, NotFoundPage, Redirect, get_post_data, get_qs_data
+from .extensions import MethodNotAllowed, NotFoundPage, Redirect
 
 
 class Application:
@@ -16,8 +17,8 @@ class Application:
             'path': path,
             'method': environ['REQUEST_METHOD'],
             'context': {},
-            'form': get_post_data(environ),
-            'request_params': get_qs_data(environ)
+            'form': self.get_post_data(environ),
+            'request_params': self.get_qs_data(environ)
         }
         headers = [('Content-Type', 'text/html')]
         for front in self.fronts:
@@ -39,3 +40,17 @@ class Application:
 
         start_response(code, headers)
         return [body]
+    
+    @staticmethod
+    def get_qs_data(environ):
+        query_string = parse_qs(environ['QUERY_STRING'])
+        parsed_data = dict(map(lambda x: (x[0], x[1][0]), query_string.items()))
+        return parsed_data
+
+    @staticmethod
+    def get_post_data(environ):
+        content_length = int(environ.get('CONTENT_LENGTH', 0))
+        content_data = environ['wsgi.input'].read(content_length)
+        parsed_data = dict(map(lambda x: (x[0].decode(
+            'utf-8'), x[1][0].decode('utf-8')), parse_qs(content_data).items()))
+        return parsed_data
