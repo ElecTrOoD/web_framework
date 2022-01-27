@@ -1,10 +1,19 @@
-from datetime import date
+from datetime import datetime
 
 
-def current_year(request):
-    request['context']['current_year'] = date.today().year
+def initial_formation(environ, request):
+    default_request = {
+        'path': environ['PATH_INFO'],
+        'method': environ['REQUEST_METHOD'],
+        'context': {}
+    }
+    request.update(default_request)
+
+def now(environ, request):
+    request['context']['now'] = datetime.now()
 
 
 default_fronts = [
-        current_year
+        initial_formation,
+        now
         ]
