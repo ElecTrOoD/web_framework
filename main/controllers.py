@@ -10,6 +10,7 @@ def about_page(request, template_dir='templates'):
     context = {'title': 'About'}
     return '200 OK', render(request, 'main/about.html', context)
 
+
 def contacts(request, template_dir='templates'):
     context = {'title': 'Contacts'}
     if request['method'] == 'POST':

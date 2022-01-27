@@ -9,11 +9,12 @@ def initial_formation(environ, request):
     }
     request.update(default_request)
 
+
 def now(environ, request):
     request['context']['now'] = datetime.now()
 
 
 default_fronts = [
-        initial_formation,
-        now
-        ]
+    initial_formation,
+    now
+]

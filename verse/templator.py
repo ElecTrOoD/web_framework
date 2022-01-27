@@ -1,6 +1,5 @@
-import inspect
-from re import T
 from jinja2 import Environment, FileSystemLoader
+
 
 def render(request, template_name, context, folder='templates'):
     env = Environment(loader=FileSystemLoader(folder), autoescape=True)

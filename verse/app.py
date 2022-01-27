@@ -37,12 +37,13 @@ class Application:
 
         start_response(code, headers)
         return [body]
-    
+
     @staticmethod
     def get_qs_data(environ):
         if environ['QUERY_STRING']:
             query_string = parse_qs(environ['QUERY_STRING'])
-            parsed_data = dict(map(lambda x: (x[0], x[1][0]), query_string.items()))
+            parsed_data = dict(
+                map(lambda x: (x[0], x[1][0]), query_string.items()))
             return parsed_data
         return {}
 
