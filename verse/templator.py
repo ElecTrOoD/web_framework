@@ -1,9 +1,13 @@
-from jinja2 import Template
+import inspect
+from re import T
+from jinja2 import Environment, FileSystemLoader
 
+def render(request, template_name, context, folder='templates'):
+    env = Environment(loader=FileSystemLoader(folder), autoescape=True)
+    template = env.get_template(template_name)
 
-def render(request, template_path, context):
     request['context'].update(context)
-    with open(template_path, encoding='utf-8') as file:
-        template = Template(file.read())
+    new_request = request.pop('context')
+    new_request['request'] = request
 
-    return bytes(template.render(request['context']), 'utf-8')
+    return bytes(template.render(new_request), 'utf-8')
