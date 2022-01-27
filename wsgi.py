@@ -5,9 +5,9 @@ from verse import Application
 from settings import HOST, PORT
 from urls import urlpatterns
 
-TEMPLATES_PATH = f'{getcwd()}\\templates\\'
+# TEMPLATES_PATH = f'{getcwd()}\\templates\\'
 
-app = Application(routes=urlpatterns, templates_path=TEMPLATES_PATH)
+app = Application(routes=urlpatterns)
 
 if __name__ == '__main__':
     print(f'Serving on http://{HOST}:{PORT}\n')
