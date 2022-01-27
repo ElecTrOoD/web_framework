@@ -6,37 +6,34 @@ from .extensions import MethodNotAllowed, NotFoundPage, Redirect
 
 
 class Application:
-    def __init__(self, routes={}, fronts=[], templates_path=''):
+    def __init__(self, routes={}, fronts=[], templates_path='templates'):
         self.routes = routes
         self.fronts = default_fronts + fronts
         self.templates_path = templates_path
 
     def __call__(self, environ, start_response):
-        path = environ['PATH_INFO']
         request = {
-            'path': path,
-            'method': environ['REQUEST_METHOD'],
-            'context': {},
             'form': self.get_post_data(environ),
             'request_params': self.get_qs_data(environ)
         }
         headers = [('Content-Type', 'text/html')]
         for front in self.fronts:
-            front(request)
-        if path[-1] != '/':
+            front(environ, request)
+        if not request['path'].endswith('/'):
             controller = Redirect()
-            headers.append(('Location', f'{path}/'))
-        elif path in self.routes:
-            if request['method'] in self.routes[path]['allowed_methods']:
-                controller = self.routes[path]['controller']
+            headers.append(('Location', f'{request["path"]}/'))
+        elif request['path'] in self.routes:
+            if request['method'] in self.routes[request['path']]['allowed_methods']:
+                controller = self.routes[request['path']]['controller']
             else:
                 controller = MethodNotAllowed()
         else:
             controller = NotFoundPage()
-        code, body = controller(request, self.templates_path)
+        request['controller'] = controller.__name__
+        code, body = controller(request)
 
         print(
-            f'{environ["REMOTE_ADDR"]} [{datetime.datetime.now()}] {environ["REQUEST_METHOD"]} {path} {code}')
+            f'{environ["REMOTE_ADDR"]} [{datetime.datetime.now()}] {environ["REQUEST_METHOD"]} {request["path"]} {code}')
 
         start_response(code, headers)
         return [body]
