@@ -29,7 +29,8 @@ class Application:
                 controller = MethodNotAllowed()
         else:
             controller = NotFoundPage()
-        request['controller'] = controller.__name__
+        if hasattr(controller, '__name__'):
+            request['controller'] = controller.__name__
         code, body = controller(request)
 
         print(
