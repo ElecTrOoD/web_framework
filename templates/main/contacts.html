@@ -1,13 +1,27 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Contacts Page</h1>
-<h3>Send message</h3>
+    <h1>Contacts Page</h1>
+    <h3>Send message</h3>
 
-<form method="post">
-    <input required type='text' name='title' placeholder="Title">
-    <input required type='text' name='text' placeholder="Text message">
-    <input required type='email' name='email' placeholder="email">
-    <p><input type="submit" value="Send message"></p>
-</form>
+    <form method="post">
+        <div class="form-group">
+            <label for="title">Title</label>
+            <input required type="text" class="form-control" id="title" name='title' placeholder="Example Title">
+        </div>
+
+        <div class="form-group">
+            <label for="Text">Text</label>
+            <textarea required class="form-control" id="Text" name='text' rows="6"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" class="form-control" id="email" name='email' placeholder="name@example.com">
+        </div>
+
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary mt-2 mb-2">Send</button>
+        </div>
+    </form>
 
 {% endblock content %}

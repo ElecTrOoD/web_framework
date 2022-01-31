@@ -3,10 +3,10 @@
 <h1>Message Page</h1>
 <h3>Your message</h3>
 
-    <div style='margin-top: 40px'>
-        <p>Title: {{message.title}}</p>
-        <text>Text: {{message.text}}</text>
-        <p>Your email: {{message.email}} </p>
+    <div class="mt-5">
+        <p class="mt-2">Title: {{request.form.title}}</p>
+        <div style="white-space: pre-wrap">{{request.form.text}}</div>
+        <p>Your email: {{request.form.email}} </p>
     </div>
 
 {% endblock content %}

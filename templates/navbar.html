@@ -1,11 +1,13 @@
 <ul class="nav nav-pills m-2">
     <li class="nav-item">
-        <a class="nav-link {{ 'active' if request.controller == 'index_page'}} " href="/">Main</a>
+        <a class="nav-link {{ 'active' if request.controller == 'IndexPage' }} " href="/">Main</a>
     </li>
+
     <li class="nav-item">
-        <a class="nav-link {{ 'active' if request.controller == 'about_page'}}" href="/about/">About</a>
+        <a class="nav-link {{ 'active' if request.controller == 'AboutPage' }}" href="/about/">About</a>
     </li>
+
     <li class="nav-item">
-        <a class="nav-link {{ 'active' if request.controller == 'contacts'}}" href="/contacts/">Contacts</a>
+        <a class="nav-link {{ 'active' if request.controller == 'ContactsPage' }}" href="/contacts/">Contacts</a>
     </li>
 </ul>
