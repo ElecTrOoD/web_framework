@@ -1,19 +1,25 @@
-from verse import render
+from verse import TemplateController, FormController
 
 
-def index_page(request, template_dir='templates'):
+class IndexPage(TemplateController):
     context = {'title': 'Main'}
-    return '200 OK', render(request, 'main/index.html', context)
+    template_name = 'main/index.html'
 
 
-def about_page(request, template_dir='templates'):
+class AboutPage(TemplateController):
     context = {'title': 'About'}
-    return '200 OK', render(request, 'main/about.html', context)
+    template_name = 'main/about.html'
 
 
-def contacts(request, template_dir='templates'):
+class ContactsPage(FormController):
     context = {'title': 'Contacts'}
-    if request['method'] == 'POST':
-        context['message'] = request['form']
-        return '200 OK', render(request, 'main/user_message.html', context)
-    return '200 OK', render(request, 'main/contacts.html', context)
+    template_name = 'main/contacts.html'
+    success_template = 'main/user_message.html'
+    form_fields = ['title', 'text', 'email']
+
+# def contacts(request, template_dir='templates'):
+#     context = {'title': 'Contacts'}
+#     if request['method'] == 'POST':
+#         context['message'] = request['form']
+#         return '200 OK', render(request, 'main/user_message.html', context)
+#     return '200 OK', render(request, 'main/contacts.html', context)

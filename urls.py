@@ -1,11 +1,12 @@
-
 # example '<path>': {'controller': <controller func>, 'allowed_methods': (<HTTP method>)}
 #         '/': {'controller': index, 'allowed_methods': ('GET', )},
 
-from main.controllers import about_page, contacts, index_page
+from main.controllers import IndexPage, AboutPage, ContactsPage
 
 urlpatterns = {
-    '/': {'controller': index_page, 'allowed_methods': ('GET', )},
-    '/about/': {'controller': about_page, 'allowed_methods': ('GET', 'POST')},
-    '/contacts/': {'controller': contacts, 'allowed_methods': ('GET', 'POST')}
+    '/': {'controller': IndexPage, 'allowed_methods': ('GET',)},
+    '/about/': {'controller': AboutPage, 'allowed_methods': ('GET', 'POST')},
+    '/contacts/': {'controller': ContactsPage, 'allowed_methods': ('GET', 'POST')}
 }
+
+
