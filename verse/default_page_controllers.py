@@ -1,14 +1,24 @@
 from .templator import render
 
 
-class TemplateController:
+class BaseController:
     _headers = [('Content-Type', 'text/html')]
-    template_name = None
-    context = None
 
     def __call__(self, request, template_dir='templates'):
         self.request = request
         self.template_dir = template_dir
+        self.additional_controller_logic()
+
+    def additional_controller_logic(self):
+        pass
+
+
+class TemplateController(BaseController):
+    template_name = None
+    context = None
+
+    def __call__(self, request, template_dir='templates'):
+        super().__call__(request, template_dir)
         return '200 OK', self._headers, render(request, self.get_template_name(), self.get_context_data())
 
     def get_template_name(self):
@@ -28,8 +38,7 @@ class FormController(TemplateController):
     success_template = None
 
     def __call__(self, request, template_dir='templates'):
-        self.request = request
-        self.template_dir = template_dir
+        super(TemplateController, self).__call__(request, template_dir)
         if request['method'] == 'POST':
             if self.form_is_valid():
                 return '200 OK', self._headers, render(request, self.get_success_template_name(),
