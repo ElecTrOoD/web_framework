@@ -1,25 +1,37 @@
+from abc import abstractmethod
+
 from .templator import render
 
 
 class BaseController:
     _headers = [('Content-Type', 'text/html')]
+    context = {}
 
     def __call__(self, request, template_dir='templates'):
         self.request = request
         self.template_dir = template_dir
-        self.additional_controller_logic()
 
-    def additional_controller_logic(self):
+    def get_logic(self):
+        pass
+
+    @abstractmethod
+    def set_context(self):
         pass
 
 
 class TemplateController(BaseController):
     template_name = None
-    context = None
+    redirect_url = None
 
     def __call__(self, request, template_dir='templates'):
         super().__call__(request, template_dir)
-        return '200 OK', self._headers, render(request, self.get_template_name(), self.get_context_data())
+        self.set_context()
+        self.get_logic()
+        if not self.redirect_url:
+            return '200 OK', self._headers, render(request, self.get_template_name(), self.get_context_data())
+        else:
+            controller = RedirectTemporary()
+            return controller(request, self.redirect_url)
 
     def get_template_name(self):
         if self.template_name:
@@ -35,27 +47,27 @@ class TemplateController(BaseController):
 
 class FormController(TemplateController):
     form_fields = None
-    success_template = None
 
     def __call__(self, request, template_dir='templates'):
         super(TemplateController, self).__call__(request, template_dir)
+        controller = RedirectTemporary()
         if request['method'] == 'POST':
             if self.form_is_valid():
-                return '200 OK', self._headers, render(request, self.get_success_template_name(),
-                                                       self.get_context_data())
+                self.set_context()
+                self.post_logic()
+                return controller(request, self.redirect_url)
             else:
-                return Redirect()
+                return controller(request, self.redirect_url)
         else:
+            self.set_context()
+            self.get_logic()
             return '200 OK', self._headers, render(request, self.get_template_name(), self.get_context_data())
-
-    def get_success_template_name(self):
-        if self.success_template:
-            return self.success_template
-        else:
-            raise ValueError('incorrect success template name')
 
     def form_is_valid(self):
         return all(True if field in self.form_fields else False for field in self.request['form'].keys())
+
+    def post_logic(self):
+        pass
 
 
 class NotFoundPage:
@@ -63,10 +75,16 @@ class NotFoundPage:
         return '404 Not Found', [('Content-Type', 'text/html')], b'404 page not found'
 
 
-class Redirect:
+class RedirectPermanent:
     def __call__(self, request, template_dir='templates'):
         return '301 Moved Permanently', [('Content-Type', 'text/html'),
                                          ('Location', f'{request["path"]}/')], b'Redirected'
+
+
+class RedirectTemporary:
+    def __call__(self, request, url, template_dir='templates'):
+        return '302 Moved Temporarily', [('Content-Type', 'text/html'),
+                                         ('Location', f'{url}')], b'Redirected'
 
 
 class MethodNotAllowed:
