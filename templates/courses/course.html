@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% set colors = ['bg-success', 'bg-primary', 'bg-danger', 'bg-warning text-dark', 'bg-info text-dark', 'bg-dark'] %}
+{% block content %}
+    <h1>Message Page</h1>
+    <h3>Your message</h3>
+    <div class="mt-5">
+        <p class="mt-2">Title: {{ course.title }}</p>
+        <div style="white-space: pre-wrap">{{ course.text }}</div>
+        <div class="mt-3">
+            {% for category in course.categories %}
+                <a class="mx-1" href="/courses/?category={{ category.name }}">
+                    <span class="badge rounded-pill {{ colors|random }}">{{ category.name }}</span>
+                </a>
+            {% endfor %}
+        </div>
+
+        {% if course.links %}
+            <h4 class="mt-3">Links:</h4>
+            <div class="mt-2" style="white-space: pre-wrap">{{ course.links }}</div>
+        {% endif %}
+    </div>
+
+
+    <button type="button" class="btn btn-primary mt-5" data-bs-toggle="modal" data-bs-target="#copyModal">
+        Copy course
+    </button>
+
+
+    <div class="modal fade" id="copyModal" tabindex="-1" aria-labelledby="copyModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="copyModalLabel">Want to copy a course?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <form method="post" id="form" action="/courses/copy/?name={{ course.name }}">
+                        <div class="form-group">
+                            <label for="name">New name</label>
+                            <input required type="text" class="form-control" id="name" name='name'
+                                   placeholder="Example name">
+                        </div>
+                    </form>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button form="form" type="submit" class="btn btn-primary mt-2 mb-2">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}
