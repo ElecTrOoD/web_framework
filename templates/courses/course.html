@@ -1,8 +1,7 @@
 {% extends "base.html" %}
 {% set colors = ['bg-success', 'bg-primary', 'bg-danger', 'bg-warning text-dark', 'bg-info text-dark', 'bg-dark'] %}
 {% block content %}
-    <h1>Message Page</h1>
-    <h3>Your message</h3>
+    <h1>{{ course.name }}</h1>
     <div class="mt-5">
         <p class="mt-2">Title: {{ course.title }}</p>
         <div style="white-space: pre-wrap">{{ course.text }}</div>
