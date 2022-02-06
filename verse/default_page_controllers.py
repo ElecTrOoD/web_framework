@@ -47,6 +47,7 @@ class TemplateController(BaseController):
 
 class FormController(TemplateController):
     form_fields = None
+    success_template = None
 
     def __call__(self, request, template_dir='templates'):
         super(TemplateController, self).__call__(request, template_dir)
@@ -55,6 +56,8 @@ class FormController(TemplateController):
             if self.form_is_valid():
                 self.set_context()
                 self.post_logic()
+                if self.success_template:
+                    return '200 OK', self._headers, render(request, self.success_template, self.get_context_data())
                 return controller(request, self.redirect_url)
             else:
                 return controller(request, self.redirect_url)
