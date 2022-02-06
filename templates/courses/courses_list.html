@@ -4,7 +4,7 @@
         <ul class="list-group">
             {% for course in courses %}
                 <li class="list-group-item d-flex justify-content-between">
-                    <a href="/course/?name={{ course.name }}">{{ course.name }}</a>
+                    <a href="/courses/course/?name={{ course.name }}">{{ course.name }}</a>
                     <a href="/courses/delete/?name={{ course.name }}">
                         <button type="button" class="btn btn-danger">Delete</button>
                     </a>
