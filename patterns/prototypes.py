@@ -1,7 +1,7 @@
-from copy import deepcopy, copy
+from copy import deepcopy
 
 
 class PrototypeMixin:
 
     def clone(self):
-        return copy(self)
+        return deepcopy(self)
