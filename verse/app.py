@@ -7,8 +7,8 @@ from .default_page_controllers import MethodNotAllowed, NotFoundPage, RedirectPe
 
 
 class Application:
-    def __init__(self, routes={}, fronts=[], templates_path='templates'):
-        self.routes = routes
+    def __init__(self, fronts=(), templates_path='templates'):
+        self.routes = {}
         self.fronts = default_fronts + fronts
         self.templates_path = templates_path
 
@@ -63,3 +63,8 @@ class Application:
                                    parse_qs(content_data.decode('utf-8'), True).items()))
             return parsed_data
         return {}
+
+    def register_urls(self, layouts):
+        for layout in layouts:
+            self.routes.update(layout.get_urls())
+        print(self.routes)

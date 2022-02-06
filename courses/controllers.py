@@ -1,12 +1,14 @@
 from courses.models import SiteData
 from logs import Logger
-from verse import TemplateController, FormController
+from verse import TemplateController, FormController, Layout
 
+courses = Layout('/courses')
+categories = Layout('/categories')
 site = SiteData()
-
 logger = Logger('courses-controllers')
 
 
+@courses.route('/')
 class CoursesListPage(TemplateController):
     template_name = 'courses/courses_list.html'
 
@@ -22,6 +24,7 @@ class CoursesListPage(TemplateController):
         logger.log(f'[INFO] CoursesListPage called')
 
 
+@courses.route('/course')
 class CoursePage(TemplateController):
     template_name = 'courses/course.html'
 
@@ -32,6 +35,7 @@ class CoursePage(TemplateController):
         logger.log(f'[INFO] CoursePage called: {self.context["course"].name}')
 
 
+@courses.route('/delete')
 class CourseDelete(TemplateController):
     redirect_url = '/courses/'
 
@@ -43,6 +47,7 @@ class CourseDelete(TemplateController):
         logger.log(f'[INFO] CourseDelete called: {self.request["request_params"]["name"]}')
 
 
+@courses.route('/create', methods=('GET', 'POST'))
 class CoursesCreatePage(FormController):
     template_name = 'courses/create_course.html'
     redirect_url = '/courses/'
@@ -58,6 +63,7 @@ class CoursesCreatePage(FormController):
         logger.log(f'[INFO] CoursesCreatePage called: {data["name"]}')
 
 
+@courses.route('/copy')
 class CoursesCopyPage(FormController):
     redirect_url = '/courses/'
     form_fields = ['name']
@@ -70,6 +76,7 @@ class CoursesCopyPage(FormController):
         logger.log(f'[INFO] CoursesCopyPage called: {self.request["request_params"]["name"]}')
 
 
+@categories.route('/')
 class CategoriesListPage(TemplateController):
     template_name = 'courses/categories_list.html'
 
@@ -80,6 +87,7 @@ class CategoriesListPage(TemplateController):
         logger.log(f'[INFO] CoursesCreatePage called')
 
 
+@categories.route('/create', methods=('GET', 'POST'))
 class CategoryCreatePage(FormController):
     template_name = 'courses/create_category.html'
     redirect_url = '/categories/'
@@ -93,6 +101,7 @@ class CategoryCreatePage(FormController):
         logger.log(f'[INFO] CategoryCreatePage called: {self.request["form"]["name"]}')
 
 
+@categories.route('/delete')
 class CategoryDelete(TemplateController):
     redirect_url = '/categories/'
 
