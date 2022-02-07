@@ -4,11 +4,11 @@ class Layout:
         self.urls = {}
 
     def route(self, url, methods=('GET',)):
-        def wrapper(cls):
-            new_url = {f'{self.prefix}{url}/'.replace('///', '/').replace('//', '/'): {'controller': cls,
+        def wrapper(wrapped):
+            new_url = {f'{self.prefix}{url}/'.replace('///', '/').replace('//', '/'): {'controller': wrapped,
                                                                                        'allowed_methods': methods}}
             self.urls.update(new_url)
-            return cls
+            return wrapped
 
         return wrapper
 

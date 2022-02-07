@@ -77,13 +77,15 @@ class SiteData:
         self.load_data()
 
     def create_user(self, user_type, name):
-        user = UserFactory.create(user_type, name)
-        if user_type == 'teacher':
-            self.teachers.append(user)
-        elif user_type == 'student':
-            self.students.append(user)
-        else:
+        attr = f'{user_type}s'
+        try:
+            value = getattr(self, attr)
+            user = UserFactory.create(user_type, name)
+            value.append(user)
+            setattr(self, attr, value)
+        except AttributeError:
             raise ValueError('Incorrect user type')
+
         self.save_data()
         return user
 
@@ -162,7 +164,6 @@ class SiteData:
             'courses': self.courses,
             'categories': self.categories
         }
-        print(data)
         with open('data.pkl', 'wb') as file:
             pickle.dump(data, file, pickle.HIGHEST_PROTOCOL)
         logger.log(f'[INFO] Data saved: {data}')
