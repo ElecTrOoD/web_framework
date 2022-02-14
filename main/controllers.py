@@ -1,4 +1,4 @@
-from verse import TemplateController, FormController, Layout
+from verse import TemplateController, FormController, Layout, render
 
 main = Layout('/')
 
@@ -27,3 +27,8 @@ class ContactsPage(FormController):
 
     def set_context(self):
         self.context = {'title': 'Contacts'}
+
+
+@main.route('/test')
+def test_cont(request):
+    return '200 OK', [('Content-Type', 'text/html')], render(request, 'main/index.html', {'title': 'test'})

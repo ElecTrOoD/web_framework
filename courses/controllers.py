@@ -1,10 +1,9 @@
-from courses.models import SiteData
 from logs import Logger
+from sitedata import site
 from verse import TemplateController, FormController, Layout
 
 courses = Layout('/courses')
 categories = Layout('/categories')
-site = SiteData()
 logger = Logger('courses-controllers')
 
 
@@ -29,7 +28,9 @@ class CoursePage(TemplateController):
     template_name = 'courses/course.html'
 
     def set_context(self):
-        self.context = {'title': 'Course', 'course': site.get_course_by_name(self.request['request_params']['name'])}
+        self.context = {'title': 'Course',
+                        'course': site.get_course(self.request['request_params']['id']),
+                        'users': site.get_users()}
 
     def get_logic(self):
         logger.log(f'[INFO] CoursePage called: {self.context["course"].name}')
@@ -43,8 +44,8 @@ class CourseDelete(TemplateController):
         pass
 
     def get_logic(self):
-        site.delete_course(self.request['request_params']['name'])
-        logger.log(f'[INFO] CourseDelete called: {self.request["request_params"]["name"]}')
+        site.delete_course(self.request['request_params']['id'])
+        logger.log(f'[INFO] CourseDelete called: {self.request["request_params"]["id"]}')
 
 
 @courses.route('/create', methods=('GET', 'POST'))
@@ -58,12 +59,33 @@ class CoursesCreatePage(FormController):
 
     def post_logic(self):
         data = self.request['form']
-        site.create_course(data['type'], data['name'], data['title'], data['text'], data['categories'],
-                           data['links'] if data['links'] else None)
+        site.create_course(data['type'], data['name'], data['title'], data['text'],
+                           list(map(lambda x: int(x), data['categories'])), data['links'] if data['links'] else None)
         logger.log(f'[INFO] CoursesCreatePage called: {data["name"]}')
 
 
-@courses.route('/copy')
+@courses.route('/edit', methods=('GET', 'POST'))
+class CoursesEditPage(FormController):
+    template_name = 'courses/edit_course.html'
+    form_fields = ['id', 'name', 'title', 'text', 'categories', 'links']
+    redirect_url = f'/courses/'
+
+    def set_context(self):
+        self.context = {'title': 'Create Course', 'categories': site.get_categories()}
+
+    def get_logic(self):
+        course = site.get_course(self.request['request_params']['id'])
+        self.context.update({'form': course.get_vars()})
+
+    def post_logic(self):
+        data = self.request['form']
+        site.edit_course(**data)
+
+        self.redirect_url = f'/courses/course/?id={data["id"]}'
+        logger.log(f'[INFO] CoursesEditPage called: {data["name"]}')
+
+
+@courses.route('/copy', methods=('GET', 'POST'))
 class CoursesCopyPage(FormController):
     redirect_url = '/courses/'
     form_fields = ['name']
@@ -72,8 +94,21 @@ class CoursesCopyPage(FormController):
         pass
 
     def post_logic(self):
-        site.copy_course(self.request['request_params']['name'], self.request['form']['name'])
-        logger.log(f'[INFO] CoursesCopyPage called: {self.request["request_params"]["name"]}')
+        site.copy_course(self.request['request_params']['id'], self.request['form']['name'])
+        logger.log(f'[INFO] CoursesCopyPage called: {self.request["request_params"]["id"]}')
+
+
+@courses.route('/subscribe', methods=('GET', 'POST'))
+class CourseSubscribePage(FormController):
+    form_fields = ['users']
+
+    def set_context(self):
+        pass
+
+    def post_logic(self):
+        self.redirect_url = f'/courses/course/?id={self.request["request_params"]["id"]}'
+        site.subscribe_users_to_course(self.request['request_params']['id'],
+                                       list(map(lambda x: int(x), self.request['form']['users'])))
 
 
 @categories.route('/')
@@ -109,5 +144,5 @@ class CategoryDelete(TemplateController):
         pass
 
     def get_logic(self):
-        site.delete_category(self.request['request_params']['name'])
-        logger.log(f'[INFO] CategoryDelete called: {self.request["request_params"]["name"]}')
+        site.delete_category(self.request['request_params']['id'])
+        logger.log(f'[INFO] CategoryDelete called: {self.request["request_params"]["id"]}')

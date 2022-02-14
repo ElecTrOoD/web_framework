@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="container content-center justify-content w-50">
+        {% if users %}
+            <ul class="list-group">
+                {% for user in users %}
+                    <li class="list-group-item d-flex justify-content-between">
+                        <a href="/users/user/?id={{ user.id }}">{{ user.first_name }} {{ user.last_name }}</a>
+                        <a href="/users/delete/?id={{ user.id }}">
+                            <button type="button" class="btn btn-danger">Delete</button>
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        <a href="/users/create/">
+            <button type="button" class="btn btn-secondary mt-5">Create user</button>
+        </a>
+    </div>
+{% endblock content %}

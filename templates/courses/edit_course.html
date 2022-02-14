@@ -1,43 +1,43 @@
 {% extends "base.html" %}
 {% block content %}
-    <h3>Create new course</h3>
+    <h3>Edit course</h3>
 
     <form method="post">
+        <input type="hidden" name="id" value="{{ form.id }}">
+
         <div class="form-group">
             <label for="name">Name</label>
-            <input required type="text" class="form-control" id="name" name='name' placeholder="Example name">
+            <input required type="text" class="form-control" id="name" name='name' value="{{ form.name }}"
+                   placeholder="Example name">
         </div>
 
         <div class="form-group mt-2">
             <label for="title">Title</label>
-            <input required type="text" class="form-control" id="title" name='title' placeholder="Example Title">
+            <input required type="text" class="form-control" id="title" name='title' value="{{ form.title }}"
+                   placeholder="Example Title">
         </div>
 
         <div class="form-group mt-2">
             <label for="Text">Text</label>
-            <textarea required class="form-control" id="Text" name='text' rows="6"></textarea>
+            <textarea required class="form-control" id="Text" name='text' rows="6">{{ form.text }}</textarea>
         </div>
 
         <div class="form-group mt-2">
             <label for="Category">Category</label>
             <select required class="form-select" size="3" multiple id="Category" name="categories">
                 {% for category in categories %}
-                    <option value="{{ category.id }}">{{ category.name }}</option>
+                    <option
+                            {% for course_category in form.categories %}
+                                {{ 'selected' if category.id == course_category.id }}
+                            {% endfor %}
+                            value="{{ category.id }}">{{ category.name }}</option>
                 {% endfor %}
             </select>
         </div>
 
         <div class="form-group mt-2">
-            <label for="Type">Type</label>
-            <select required class="form-select" id="Type" name="type" aria-label="Type">
-                <option value="online">Online</option>
-                <option value="offline">Offline</option>
-            </select>
-        </div>
-
-        <div class="form-group mt-2">
             <label for="Links">Additional links</label>
-            <textarea class="form-control" id="Links" name='links' rows="2"></textarea>
+            <textarea class="form-control" id="Links" name='links' rows="2">{{ form.links if form.links }}</textarea>
         </div>
 
         <div class="form-group mt-2">

@@ -4,8 +4,8 @@
         <ul class="list-group">
             {% for category in categories %}
                 <li class="list-group-item d-flex justify-content-between">
-                    <a href="/courses/?category={{ category.name }}">{{ category.name }}</a>
-                    <a href="/categories/delete/?name={{ category.name }}">
+                    <a href="/courses/?category={{ category.id }}">{{ category.name }}</a>
+                    <a href="/categories/delete/?id={{ category.id }}">
                         <button type="button" class="btn btn-danger">Delete</button>
                     </a>
                 </li>
@@ -15,5 +15,4 @@
             <button type="button" class="btn btn-secondary mt-5">Create category</button>
         </a>
     </div>
-
 {% endblock content %}
