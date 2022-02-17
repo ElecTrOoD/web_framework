@@ -65,7 +65,7 @@ class SiteDbData:
 
     def edit_course(self, id, name, title, text, categories, links=None):
         course = self.get_course(id)
-        course_cats = self.get_categories_by_id(list(map(lambda x: int(x), categories)))
+        course_cats = self.get_categories_by_id([int(x) for x in categories])
         course.set_vars(name, title, text, course_cats, links)
         self.course_mapper.update(course)
 

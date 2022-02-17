@@ -66,9 +66,7 @@ class UserMapper(DataMapper):
         if result:
             for item in result:
                 users.append(u.UserFabric.create(*item))
-            return users
-        else:
-            return []
+        return users
 
     def create(self, obj):
         statement = f'INSERT INTO USERS (first_name, last_name, email, type) VALUES (?, ?, ?, ?)'
@@ -123,18 +121,18 @@ class CourseMapper(DataMapper):
                 'text': course_data[3],
                 'links': course_data[4],
                 'id': course_data[5],
-                'categories': list(map(lambda x: c.Category(x[1], x[0]), categories_data)),
+                'categories': [c.Category(x[1], x[0]) for x in categories_data],
             }
             course = c.CourseFabric.create(**result)
 
             self.cursor.execute(subscibers_statement, (id,))
-            c_subs = list(map(lambda x: x[0], self.cursor.fetchall()))
+            course_subs = [x[0] for x in self.cursor.fetchall()]
             self.cursor.execute(f'SELECT * FROM USERS')
             all_users = self.cursor.fetchall()
             subscribers = []
 
             for user in all_users:
-                if user[0] in c_subs:
+                if user[0] in course_subs:
                     subscribers.append(u.UserFabric.create(user[4], user[2], user[1], user[3], user[0]))
             course.update_subscribers(subscribers)
             return course
@@ -160,7 +158,7 @@ class CourseMapper(DataMapper):
             for item in result:
                 self.cursor.execute(categories_statement, (item[5],))
                 categories_data = self.cursor.fetchall()
-                if category and int(category) not in list(map(lambda x: x[1], categories_data)):
+                if category and int(category) not in [x[1] for x in categories_data]:
                     continue
 
                 data = {
@@ -170,12 +168,12 @@ class CourseMapper(DataMapper):
                     'text': item[3],
                     'links': item[4],
                     'id': item[5],
-                    'categories': list(map(lambda x: c.Category(x[0]), categories_data)),
+                    'categories': [c.Category(x[1], x[0]) for x in categories_data],
                 }
 
                 course = c.CourseFabric.create(**data)
                 self.cursor.execute(subscibers_statement, (course.id,))
-                c_subs = list(map(lambda x: x[0], self.cursor.fetchall()))
+                c_subs = [x[0] for x in self.cursor.fetchall()]
 
                 subscribers = []
 
@@ -185,9 +183,7 @@ class CourseMapper(DataMapper):
                 course.update_subscribers(subscribers)
 
                 courses.append(course)
-            return courses
-        else:
-            return []
+        return courses
 
     def create(self, obj):
         course_statement = f'INSERT INTO COURSES (name, title, text, links, type) VALUES (?, ?, ?, ?, ?)'
@@ -227,22 +223,22 @@ class CourseMapper(DataMapper):
         self.cursor.execute(get_cats_statement, (obj.id,))
         course_cats = self.cursor.fetchall()
         self.cursor.execute(get_subscibers_statement, (obj.id,))
-        c_subs = list(map(lambda x: x[0], self.cursor.fetchall()))
+        course_subs = [x[0] for x in self.cursor.fetchall()]
 
-        for sub in c_subs:
-            if sub not in list(map(lambda x: x.id, obj.subscribers)):
+        for sub in course_subs:
+            if sub not in [x.id for x in obj.subscribers]:
                 self.cursor.execute(delete_subscibers_statement, (sub, obj.id))
 
         for subscriber in obj.subscribers:
-            if subscriber.id not in c_subs:
+            if subscriber.id not in course_subs:
                 self.cursor.execute(insert_subscibers_statement, (subscriber.id, obj.id))
 
         for category in obj.categories:
-            if category.id not in list(map(lambda x: x[0], course_cats)):
+            if category.id not in [x[0] for x in course_cats]:
                 self.cursor.execute(insert_course_cat_statement, (obj.id, category.id))
 
         for category in course_cats:
-            if category[0] not in list(map(lambda x: x.id, obj.categories)):
+            if category[0] not in [x.id for x in obj.categories]:
                 self.cursor.execute(delete_course_cat_statement, (obj.id, category[0]))
 
         try:
@@ -289,9 +285,7 @@ class CategoryMapper(DataMapper):
         if result:
             for item in result:
                 categories.append(c.Category(*item))
-            return categories
-        else:
-            return []
+        return categories
 
     def create(self, obj):
         statement = f'INSERT INTO CATEGORIES (name) VALUES (?)'
