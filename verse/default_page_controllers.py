@@ -1,5 +1,6 @@
 from abc import abstractmethod
 
+from .errors import InvalidFormException
 from .templator import render
 
 
@@ -42,32 +43,36 @@ class TemplateController(BaseController):
     def get_context_data(self):
         if isinstance(self.context, dict):
             return self.context
-        return {}
+        else:
+            raise Exception('Invalid context data')
 
 
 class FormController(TemplateController):
-    form_fields = None
+    form = None
     success_template = None
 
     def __call__(self, request, template_dir='templates'):
         super(TemplateController, self).__call__(request, template_dir)
         controller = RedirectTemporary()
         if request['method'] == 'POST':
-            if self.form_is_valid():
-                self.set_context()
-                self.post_logic()
-                if self.success_template:
-                    return '200 OK', self._headers, render(request, self.success_template, self.get_context_data())
-                return controller(request, self.redirect_url)
-            else:
-                return controller(request, self.redirect_url)
+            self.validate_form()
+            self.post_logic()
+            if self.success_template:
+                return '200 OK', self._headers, render(request, self.success_template, self.get_context_data())
+            return controller(request, self.redirect_url)
         else:
             self.set_context()
             self.get_logic()
             return '200 OK', self._headers, render(request, self.get_template_name(), self.get_context_data())
 
-    def form_is_valid(self):
-        return all(True if field in self.form_fields else False for field in self.request['form'].keys())
+    def validate_form(self):
+        try:
+            form = self.form(**self.request['form'])
+        except Exception as e:
+            raise InvalidFormException(e)
+        result = form.__dict__
+        result.pop('__initialised__')
+        self.request['form'] = result
 
     def post_logic(self):
         pass

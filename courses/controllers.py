@@ -1,3 +1,4 @@
+from courses.forms import CourseCreateForm, CourseEditForm, CourseSubscribeForm, CourseCopyForm, CategoryCopyForm
 from logs import Logger
 from sitedata import site
 from verse import TemplateController, FormController, Layout
@@ -52,7 +53,7 @@ class CourseDelete(TemplateController):
 class CoursesCreatePage(FormController):
     template_name = 'courses/create_course.html'
     redirect_url = '/courses/'
-    form_fields = ['name', 'title', 'text', 'categories', 'type', 'links']
+    form = CourseCreateForm
 
     def set_context(self):
         self.context = {'title': 'Create Course', 'categories': site.get_categories()}
@@ -60,14 +61,14 @@ class CoursesCreatePage(FormController):
     def post_logic(self):
         data = self.request['form']
         site.create_course(data['type'], data['name'], data['title'], data['text'],
-                           list(map(lambda x: int(x), data['categories'])), data['links'] if data['links'] else None)
+                           [int(x) for x in data['categories']], data['links'] if data['links'] else None)
         logger.log(f'[INFO] CoursesCreatePage called: {data["name"]}')
 
 
 @courses.route('/edit', methods=('GET', 'POST'))
 class CoursesEditPage(FormController):
     template_name = 'courses/edit_course.html'
-    form_fields = ['id', 'name', 'title', 'text', 'categories', 'links']
+    form = CourseEditForm
     redirect_url = f'/courses/'
 
     def set_context(self):
@@ -88,7 +89,7 @@ class CoursesEditPage(FormController):
 @courses.route('/copy', methods=('GET', 'POST'))
 class CoursesCopyPage(FormController):
     redirect_url = '/courses/'
-    form_fields = ['name']
+    form = CourseCopyForm
 
     def set_context(self):
         pass
@@ -100,7 +101,7 @@ class CoursesCopyPage(FormController):
 
 @courses.route('/subscribe', methods=('GET', 'POST'))
 class CourseSubscribePage(FormController):
-    form_fields = ['users']
+    form = CourseSubscribeForm
 
     def set_context(self):
         pass
@@ -108,7 +109,7 @@ class CourseSubscribePage(FormController):
     def post_logic(self):
         self.redirect_url = f'/courses/course/?id={self.request["request_params"]["id"]}'
         site.subscribe_users_to_course(self.request['request_params']['id'],
-                                       list(map(lambda x: int(x), self.request['form']['users'])))
+                                       [int(x) for x in self.request['form']['users']])
 
 
 @categories.route('/')
@@ -126,7 +127,7 @@ class CategoriesListPage(TemplateController):
 class CategoryCreatePage(FormController):
     template_name = 'courses/create_category.html'
     redirect_url = '/categories/'
-    form_fields = ['name']
+    form = CategoryCopyForm
 
     def set_context(self):
         self.context = {'title': 'Create Category'}
