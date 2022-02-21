@@ -48,21 +48,21 @@ class Application:
 
     @staticmethod
     def get_qs_data(environ):
+        parsed_data = {}
         if environ['QUERY_STRING']:
             query_string = parse_qs(environ['QUERY_STRING'])
-            parsed_data = dict(map(lambda x: (x[0], x[1][0]), query_string.items()))
-            return parsed_data
-        return {}
+            parsed_data.update({x[0]: x[1][0] for x in query_string.items()})
+        return parsed_data
 
     @staticmethod
     def get_post_data(environ):
         content_length = int(environ.get('CONTENT_LENGTH', 0))
+        parsed_data = {}
         if content_length:
             content_data = environ['wsgi.input'].read(content_length)
-            parsed_data = dict(map(lambda x: (x[0], x[1][0]) if len(x[1]) == 1 else x,
-                                   parse_qs(content_data.decode('utf-8'), True).items()))
-            return parsed_data
-        return {}
+            parsed_data.update({x[0]: x[1][0] if len(x[1]) == 1 else x[1] for x in
+                                parse_qs(content_data.decode('utf-8'), True).items()})
+        return parsed_data
 
     def register_urls(self, layouts):
         for layout in layouts:

@@ -1,4 +1,5 @@
 from sitedata import site
+from users.forms import UserCreateForm
 from verse import Layout, TemplateController, FormController
 
 users = Layout('/users')
@@ -24,7 +25,7 @@ class UserPage(TemplateController):
 class UserCreatePage(FormController):
     template_name = 'users/create_user.html'
     redirect_url = '/users/'
-    form_fields = ['first_name', 'last_name', 'email', 'type']
+    form = UserCreateForm
 
     def set_context(self):
         self.context = {'title': 'Create User', 'types': site.user_types}
