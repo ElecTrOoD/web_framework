@@ -66,6 +66,14 @@ class FormController(TemplateController):
             return '200 OK', self._headers, render(request, self.get_template_name(), self.get_context_data())
 
     def validate_form(self):
+        for key, val in self.form.__annotations__.items():
+            if hasattr(val, '__origin__') and val.__origin__ == list:
+                data = self.request['form'][key]
+                self.request['form'][key] = [item for item in data] if len(data) > 1 else [data]
+                if hasattr(val, '__args__') and int in val.__args__:
+                    data = self.request['form'][key]
+                    self.request['form'][key] = [int(item) if item.isdigit() else item for item in data]
+
         try:
             form = self.form(**self.request['form'])
         except Exception as e:

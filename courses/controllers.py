@@ -108,8 +108,7 @@ class CourseSubscribePage(FormController):
 
     def post_logic(self):
         self.redirect_url = f'/courses/course/?id={self.request["request_params"]["id"]}'
-        site.subscribe_users_to_course(self.request['request_params']['id'],
-                                       [int(x) for x in self.request['form']['users']])
+        site.subscribe_users_to_course(self.request['request_params']['id'], self.request['form']['users'])
 
 
 @categories.route('/')
